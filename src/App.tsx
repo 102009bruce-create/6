@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { ShoppingCart, Search, Star, MapPin, Clock, Phone, Plus, Minus, Info, ChevronRight, X, Menu } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
+import AIChat from './components/AIChat';
 
 // Mock Data
 const STORE_INFO = {
@@ -422,6 +423,9 @@ export default function App() {
           </>
         )}
       </AnimatePresence>
+
+      {/* AI Chatbot */}
+      <AIChat />
     </div>
   );
 }
