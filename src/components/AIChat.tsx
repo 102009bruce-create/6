@@ -56,33 +56,56 @@ export default function AIChat() {
     setIsLoading(true);
 
     try {
+      let responseText = "";
+
       if (!process.env.GEMINI_API_KEY) {
-        throw new Error("請在左側 Settings -> Secrets 中設定 GEMINI_API_KEY");
-      }
+        // Rule-based fallback when no API key is provided
+        const lowerInput = userText.toLowerCase();
+        if (lowerInput.includes('營業時間') || lowerInput.includes('時間') || lowerInput.includes('幾點')) {
+          responseText = "我們的營業時間是：週一至週五 早上7:30-11:30 (其他時間改預約制)。";
+        } else if (lowerInput.includes('外送') || lowerInput.includes('運費') || lowerInput.includes('多久')) {
+          responseText = "我們的外送費是 NT$30，外送時間大約 20-30 分鐘喔！";
+        } else if (lowerInput.includes('減脂') || lowerInput.includes('推薦') || lowerInput.includes('好吃')) {
+          responseText = "推薦您我們的「增肌減脂餐」：舒肥雞胸肉餐盒 (NT$120) 或 鹽烤鮭魚藜麥飯 (NT$150)，健康又好吃！";
+        } else if (lowerInput.includes('地址') || lowerInput.includes('在哪') || lowerInput.includes('位置')) {
+          responseText = "我們的地址是：台北市大同區承德路一段23號1樓。歡迎來店自取！";
+        } else if (lowerInput.includes('電話') || lowerInput.includes('聯絡') || lowerInput.includes('打給')) {
+          responseText = "您可以撥打 0906-000-923 或 02-25236643 與我們聯絡。";
+        } else if (lowerInput.includes('菜單') || lowerInput.includes('賣什麼') || lowerInput.includes('餐點')) {
+          responseText = "我們提供增肌減脂餐、運動營養餐、兒童健康餐以及健康飲品。您可以直接在網頁左側瀏覽完整菜單並加入購物車喔！";
+        } else {
+          responseText = "您好！目前為「自動客服模式」。如果您有訂餐需求，可以直接點擊網頁上的餐點加入購物車！如果有其他特殊問題，歡迎撥打專線 0906-000-923 與我們聯絡。";
+        }
+        
+        // Simulate typing delay
+        await new Promise(resolve => setTimeout(resolve, 1000));
+      } else {
+        // Real AI mode
+        if (!chatRef.current) {
+          const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY as string });
+          chatRef.current = ai.chats.create({
+            model: 'gemini-3-flash-preview',
+            config: {
+              systemInstruction: SYSTEM_INSTRUCTION,
+            }
+          });
+        }
 
-      if (!chatRef.current) {
-        const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY as string });
-        chatRef.current = ai.chats.create({
-          model: 'gemini-3-flash-preview',
-          config: {
-            systemInstruction: SYSTEM_INSTRUCTION,
-          }
-        });
+        const response = await chatRef.current.sendMessage({ message: userText });
+        responseText = response.text || '抱歉，我現在有點無法思考，請稍後再試。';
       }
-
-      const response = await chatRef.current.sendMessage({ message: userText });
       
       setMessages(prev => [...prev, { 
         id: (Date.now() + 1).toString(), 
         role: 'model', 
-        text: response.text || '抱歉，我現在有點無法思考，請稍後再試。' 
+        text: responseText
       }]);
     } catch (error: any) {
       console.error('Chat error:', error);
       setMessages(prev => [...prev, { 
         id: (Date.now() + 1).toString(), 
         role: 'model', 
-        text: `抱歉，系統發生錯誤：${error?.message || '未知錯誤'}。請確認 API Key 是否設定正確。` 
+        text: `抱歉，系統發生錯誤：${error?.message || '未知錯誤'}。` 
       }]);
     } finally {
       setIsLoading(false);
