@@ -11,7 +11,7 @@ const STORE_INFO = {
   address: "台北市大同區承德路一段23號1樓",
   phone: "0906-000-923 / 02-25236643",
   hours: "週一至週五 早上7:30-11:30 (其他時間改預約制)",
-  deliveryFee: "$30",
+  deliveryFee: "NT$30",
   deliveryTime: "20-30 min",
   banner: "https://images.unsplash.com/photo-1490645935967-10de6ba17061?auto=format&fit=crop&q=80&w=2000&h=500",
 };
@@ -305,7 +305,7 @@ export default function App() {
                           )}
                         </div>
                         <p className="text-gray-500 text-sm line-clamp-2 mt-2 flex-1">{item.description}</p>
-                        <div className="mt-4 font-bold text-gray-900">${item.price}</div>
+                        <div className="mt-4 font-bold text-gray-900">NT${item.price}</div>
                       </div>
                       <div className="w-32 h-32 flex-shrink-0 relative rounded-lg overflow-hidden">
                         <img src={item.image} alt={item.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
@@ -374,7 +374,7 @@ export default function App() {
                       <div key={item.id} className="flex items-center justify-between gap-4">
                         <div className="flex-1">
                           <h4 className="font-medium text-gray-900">{item.name}</h4>
-                          <div className="text-gray-500 mt-1">${item.price}</div>
+                          <div className="text-gray-500 mt-1">NT${item.price}</div>
                         </div>
                         <div className="flex items-center gap-3 bg-gray-100 rounded-full px-3 py-1">
                           <button 
@@ -392,7 +392,7 @@ export default function App() {
                           </button>
                         </div>
                         <div className="font-bold w-16 text-right">
-                          ${item.price * item.quantity}
+                          NT${item.price * item.quantity}
                         </div>
                       </div>
                     ))}
@@ -404,7 +404,7 @@ export default function App() {
                 <div className="border-t p-4 bg-gray-50">
                   <div className="flex justify-between mb-2 text-gray-600">
                     <span>小計</span>
-                    <span>${cartTotal}</span>
+                    <span>NT${cartTotal}</span>
                   </div>
                   <div className="flex justify-between mb-4 text-gray-600">
                     <span>外送費</span>
@@ -412,7 +412,7 @@ export default function App() {
                   </div>
                   <div className="flex justify-between mb-6 text-xl font-bold">
                     <span>總計</span>
-                    <span>${cartTotal + parseInt(STORE_INFO.deliveryFee.replace('$', ''))}</span>
+                    <span>NT${cartTotal + parseInt(STORE_INFO.deliveryFee.replace(/\D/g, ''))}</span>
                   </div>
                   <button className="w-full bg-green-600 text-white py-4 rounded-xl font-bold text-lg hover:bg-green-700 transition-colors flex items-center justify-center gap-2 shadow-lg shadow-green-600/20">
                     前往結帳 <ChevronRight size={20} />
