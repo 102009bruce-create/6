@@ -56,13 +56,16 @@ export default function AIChat() {
     setIsLoading(true);
 
     try {
+      if (!process.env.GEMINI_API_KEY) {
+        throw new Error("請在左側 Settings -> Secrets 中設定 GEMINI_API_KEY");
+      }
+
       if (!chatRef.current) {
         const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY as string });
         chatRef.current = ai.chats.create({
           model: 'gemini-3-flash-preview',
           config: {
             systemInstruction: SYSTEM_INSTRUCTION,
-            temperature: 0.7,
           }
         });
       }
@@ -74,12 +77,12 @@ export default function AIChat() {
         role: 'model', 
         text: response.text || '抱歉，我現在有點無法思考，請稍後再試。' 
       }]);
-    } catch (error) {
+    } catch (error: any) {
       console.error('Chat error:', error);
       setMessages(prev => [...prev, { 
         id: (Date.now() + 1).toString(), 
         role: 'model', 
-        text: '抱歉，系統目前發生一點錯誤，請稍後再試或直接來電詢問。' 
+        text: `抱歉，系統發生錯誤：${error?.message || '未知錯誤'}。請確認 API Key 是否設定正確。` 
       }]);
     } finally {
       setIsLoading(false);
